@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Escoamento</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #004080;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #003366;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #003366;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #004080;
+        }
+
+        .result {
+            font-weight: bold;
+            text-align: center;
+            color: #003366;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #004080;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        a:hover {
+            background-color: #003366;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Escoamento</h1>
+    <div class="container">
+        <label for="density">Densidade (kg/m³):</label>
+        <input type="number" id="density" placeholder="Exemplo: 1000" required>
+        
+        <label for="velocity">Velocidade (m/s):</label>
+        <input type="number" id="velocity" placeholder="Exemplo: 2" required>
+        
+        <label for="diameter">Diâmetro (m):</label>
+        <input type="number" id="diameter" placeholder="Exemplo: 0.05" required>
+        
+        <label for="viscosity">Viscosidade (Pa·s):</label>
+        <input type="number" id="viscosity" placeholder="Exemplo: 0.001" step="0.0001" required>
+        
+        <button onclick="calculateFlow()">Calcular Escoamento</button>
+        
+        <p class="result" id="result"></p>
+        
+        <div class="chart-container">
+            <canvas id="flowChart" width="400" height="200"></canvas>
+        </div>
+
+        <a href="index2.html">Voltar à Página Inicial</a>
+    </div>
+
+    <script>
+        let chart; // Variável global para o gráfico
+
+        function calculateFlow() {
+            // Captura os valores dos campos
+            const density = parseFloat(document.getElementById('density').value);
+            const velocity = parseFloat(document.getElementById('velocity').value);
+            const diameter = parseFloat(document.getElementById('diameter').value);
+            const viscosity = parseFloat(document.getElementById('viscosity').value);
+
+            // Verifica se todos os valores foram preenchidos
+            if (isNaN(density) || isNaN(velocity) || isNaN(diameter) || isNaN(viscosity)) {
+                alert('Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+
+            // Calcula o Número de Reynolds
+            const reynoldsNumber = (density * velocity * diameter) / viscosity;
+            let adjustedVelocity;
+            let flowType;
+
+            // Ajusta o fluxo baseado no Número de Reynolds
+            if (reynoldsNumber <= 2100) {
+                flowType = 'Laminar';
+                adjustedVelocity = velocity * 2;
+            } else if (reynoldsNumber >= 4000) {
+                flowType = 'Turbulento';
+                adjustedVelocity = velocity * 1.2;
+            } else {
+                flowType = 'Transição';
+                adjustedVelocity = velocity; // Sem ajuste para transição
+            }
+
+            // Exibe o resultado no elemento de resultado
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = `
+                Número de Reynolds: ${reynoldsNumber.toFixed(2)} 
+                - Fluxo: ${flowType} 
+                - Velocidade Ajustada: ${adjustedVelocity.toFixed(2)} m/s
+            `;
+
+            // Atualiza o gráfico
+            updateChart(flowType, reynoldsNumber);
+        }
+
+        function updateChart(flowType, reynoldsNumber) {
+            const labels = ['Laminar', 'Transição', 'Turbulento'];
+            const values = [
+                flowType === 'Laminar' ? reynoldsNumber : 0,
+                flowType === 'Transição' ? reynoldsNumber : 0,
+                flowType === 'Turbulento' ? reynoldsNumber : 0,
+            ];
+
+            const colors = ['#4CAF50', '#FFC107', '#F44336'];
+
+            const ctx = document.getElementById('flowChart').getContext('2d');
+
+            if (chart) {
+                chart.destroy(); // Remove o gráfico anterior
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Número de Reynolds',
+                        data: values,
+                        backgroundColor: colors,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+        }
+    </script>
+</body>
+</html>
