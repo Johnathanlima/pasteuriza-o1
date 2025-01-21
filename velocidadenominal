@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocidade Nominal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f1f1f1; /* Fundo mais suave */
+            color: #333;
+        }
+
+        header {
+            background-color: #003366; /* Azul escuro e sofisticado */
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-bottom: 5px solid #005b99; /* Azul mais claro para o efeito */
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        section {
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 800px;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            color: #005b99; /* Azul mais claro para os títulos */
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #004080; /* Azul intermediário */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005b99; /* Azul claro no hover */
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #e7f3fe; /* Fundo suave para o resultado */
+            color: #004080; /* Azul escuro */
+            border: 1px solid #b3d7ff;
+            border-radius: 5px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #004080; /* Azul escuro para o link */
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            color: #005b99;
+            text-decoration: underline;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 15px;
+            }
+
+            input, button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cálculo de Velocidade Nominal</h1>
+    </header>
+
+    <section>
+        <h2>Velocidade Nominal</h2>
+        <p>A velocidade nominal do produto é um parâmetro importante para o cálculo de processos de pasteurização, pois influencia o tempo de residência do produto dentro do sistema de aquecimento ou resfriamento.</p>
+        <p>Para calcular a velocidade nominal, insira os valores necessários abaixo:</p>
+
+        <label for="flowRate">Vazão (Q) [m³/s]:</label>
+        <input type="number" id="flowRate" placeholder="Exemplo: 0.01" step="any" required>
+        
+        <label for="diameter">Diâmetro da tubulação (D) [m]:</label>
+        <input type="number" id="diameter" placeholder="Exemplo: 0.1" step="any" required>
+        
+        <button onclick="calculateFlowVelocity()">Calcular Velocidade Nominal</button>
+        
+        <div class="result" id="result"></div>
+
+        <a href="index2.html" class="back-button">Voltar à Página Inicial</a>
+    </section>
+
+    <script>
+        function calculateFlowVelocity() {
+            // Obtendo os valores de entrada
+            const flowRate = parseFloat(document.getElementById("flowRate").value);
+            const diameter = parseFloat(document.getElementById("diameter").value);
+            
+            // Verificando se os valores estão corretos
+            if (isNaN(flowRate) || isNaN(diameter) || flowRate <= 0 || diameter <= 0) {
+                alert("Por favor, insira valores válidos para vazão e diâmetro.");
+                return;
+            }
+
+            // Cálculo da área da seção transversal da tubulação (A = π * (D/2)^2)
+            const radius = diameter / 2;
+            const area = Math.PI * Math.pow(radius, 2);
+
+            // Cálculo da velocidade nominal (v = Q / A)
+            const velocity = flowRate / area;
+
+            // Exibindo o resultado
+            document.getElementById("result").textContent = 
+                `A velocidade nominal do produto é: ${velocity.toFixed(4)} m/s`;
+        }
+    </script>
+</body>
+</html>
